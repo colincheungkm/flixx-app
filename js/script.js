@@ -238,6 +238,55 @@ function displayBackgroundImage(type, backgroundPath) {
   }
 }
 
+// Display movie sliders
+async function displaySlider() {
+  const { results } = await fetchAPIData("movie/now_playing");
+
+  results.forEach((movie) => {
+    const div = document.createElement("div");
+    div.classList.add("swiper-slide");
+
+    div.innerHTML = `
+      <a href="movie-details.html?id=${movie.id}">
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${
+      movie.title
+    }" />
+      </a>
+      <h4 class="swiper-rating">
+        <i class="fas fa-star text-secondary"></i> ${movie.vote_average.toFixed(
+          2
+        )} / 10
+      </h4>
+    `;
+
+    document.querySelector(".swiper-wrapper").appendChild(div);
+
+    initSwiper();
+  });
+}
+
+// Initialize Swiper
+function initSwiper() {
+  const swiper = new Swiper(".swiper", {
+    slidesPerView: 1,
+    spaceBetween: 30,
+    freeMode: true,
+    loop: true,
+    autoplay: { delay: 4000, disableOnInteractions: false },
+    breakpoints: {
+      500: {
+        slidesPerView: 2,
+      },
+      700: {
+        slidesPerView: 3,
+      },
+      1200: {
+        slidesPerView: 4,
+      },
+    },
+  });
+}
+
 // "Fetch" data from TMDB API
 async function fetchAPIData(endpoint) {
   // never do this on PROD level code - put it in a .env file
@@ -286,6 +335,7 @@ function init() {
     case "/index.html":
       console.log("Home");
       displayPopularMovies();
+      displaySlider();
       break;
     case "/shows.html":
       console.log("Shows");
